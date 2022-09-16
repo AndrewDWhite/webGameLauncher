@@ -38,6 +38,7 @@ function myTableUpdatesFunction() {
 			fetch("/start", {
 				method: "POST",
 				body: "id=" + $('#mytable').DataTable().row({ selected: true }).data()[1]
+				       +" port=" + $('#mytable').DataTable().row({ selected: true }).data()[4]
 			});
 
 			myStartTime = Date.now();
