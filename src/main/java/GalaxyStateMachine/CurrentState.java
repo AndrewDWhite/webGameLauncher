@@ -39,7 +39,7 @@ public enum CurrentState {
 			
 			ObjectNode myObjectNode  = mapper.createObjectNode();
 			ObjectNode mySubNode  = mapper.createObjectNode();
-			myObjectNode.put("data", mySubNode);
+			myObjectNode.set("data", mySubNode);
 			return myObjectNode;
 		}
 	},

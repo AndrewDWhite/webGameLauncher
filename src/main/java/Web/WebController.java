@@ -5,22 +5,11 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.NullNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.ValueNode;
-import com.github.arteam.simplejsonrpc.client.builder.AbstractBuilder;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
 
 import GalaxyStateMachine.ProcessGalaxyResponse;
 
@@ -40,7 +29,7 @@ public class WebController {
 	@RequestMapping("/")
 	@ResponseBody
 	String home() {
-		return "<a href = '/seeit'>py -3.7-32 generic.py token 8488</a>";
+		return "<a href = '/games'>py -3.7-32 generic.py token 8488</a>";
 	}
 	
 	@RequestMapping("/games")
@@ -76,7 +65,9 @@ public class WebController {
 			for (String key : ProcessGalaxyResponse.idsToTitles.keySet()) {
 				logger.info(key);
 				result = result + "<tr>\n";
-				result = result + "<td><a href='https://gamesdb.gog.com/platforms/test/external_releases/"+key+"'>"+StringEscapeUtils.escapeHtml4(key)+"</td>\n";
+				result = result + "<td><form action='/start' method='post'>"
+						+ "    <button type='submit' name='id' value='"+StringEscapeUtils.escapeHtml4(key)+"' class='btn-link'>"+StringEscapeUtils.escapeHtml4(key)+"</button>\r\n"
+						+ "</form></td>\n";
 				result = result + "<td>"+StringEscapeUtils.escapeHtml4(key)+"</td>\n";
 				result = result + "<td>\n";
 				result = result + StringEscapeUtils.escapeHtml4(ProcessGalaxyResponse.idsToTitles.get(key));
@@ -282,7 +273,7 @@ public class WebController {
 	 * IOUtils.toByteArray(ClassLoader.getSystemResourceAsStream("image.jpg")); }
 	 */
 
-	@RequestMapping("/seeit")
+	/*@RequestMapping("/seeit")
 	@ResponseBody
 	String seeit() {
 		ArrayList<String>values = new ArrayList<String>();
@@ -292,6 +283,14 @@ public class WebController {
 		}
 		
 		return values.toString();
+	}*/
+	
+	//TODO add security for this to only launch for authorized
+	@RequestMapping(path = "/start", method = RequestMethod.POST)
+	@ResponseBody
+	String start(@RequestBody String id) {
+		GoGRPCEmulator.requestedGameIdRuns.add(id.substring(3));
+		return "running : "+ id ;
 	}
 
 }

@@ -8,18 +8,15 @@ import java.util.Iterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
 
 import Web.GoGRPCEmulator;
 
 public class ProcessGalaxyResponse {
 	
 	static Logger logger = LoggerFactory.getLogger("ProcessGalaxyResponse");
-
+	
 	//TODO make this so nothing else writes to it
 	public static HashMap<String,String> idsToTitles = new HashMap<String, String>();
 	

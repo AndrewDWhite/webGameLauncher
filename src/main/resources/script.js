@@ -31,9 +31,10 @@ function myTableUpdatesFunction() {
 				myStartTime = Date.now();
 			}
 		}
-		//Copy to clipboard (x)
+		//TODO
+		//Launch (x)
 		if (controllers[0].buttons[2].touched) {
-			navigator.clipboard.writeText($('#mytable').DataTable().row({ selected: true }).data()[2]);
+			//navigator.clipboard.writeText($('#mytable').DataTable().row({ selected: true }).data()[2]);
 			myStartTime = Date.now();
 		}
 
