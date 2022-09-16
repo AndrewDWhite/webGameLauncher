@@ -6,17 +6,17 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.LinkedTransferQueue;
 
 import javax.net.ServerSocketFactory;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.LongNode;
-import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.fasterxml.jackson.databind.node.ValueNode;
@@ -35,6 +35,8 @@ public class GoGRPCEmulator {
 	protected static final String ID = "id";
 	protected static final String METHOD = "method";
 	protected static final String PARAMS = "params";
+	
+	public static LinkedTransferQueue<String> myMessages = new LinkedTransferQueue<String>();
 
 	private ObjectNode getNode(ValueNode id, String method, JsonNode params) {
 		ObjectMapper mapper = new ObjectMapper();
@@ -82,6 +84,8 @@ public class GoGRPCEmulator {
 			myState= myState.nextState();
 			logger.info(">> "+ json);
 			String read = in.readLine();
+			
+			myMessages.add(StringEscapeUtils.escapeHtml4(read));
 			//TODO something if needed
 			logger.info("<< " + read);
 			logger.info("end loop");
