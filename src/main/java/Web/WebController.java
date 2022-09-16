@@ -56,7 +56,7 @@ public class WebController {
 				+ "                   <thead>\n<tr>\n"
 				;
 		//TODO write header for each field
-		result = result + "<th>"+"link to online db"+"</th>\n";
+		result = result + "<th>"+"link to play"+"</th>\n";
 		//ProcessGalaxyResponse.idsToTitles
 		result = result + "<th>id</th>\n";
 		result = result + "<th>title</th>\n";
