@@ -71,15 +71,18 @@ public class WebController {
 		//ProcessGalaxyResponse.idsToTitles
 		result = result + "<th>id</th>\n";
 		result = result + "<th>title</th>\n";
+		result = result + "<th>search on igdb</th>\n";
 		result = result + "</tr>\n</thead>\n<tbody>\n";
 			for (String key : ProcessGalaxyResponse.idsToTitles.keySet()) {
 				logger.info(key);
 				result = result + "<tr>\n";
-				result = result + "<td><a href='https://gamesdb.gog.com/platforms/test/external_releases/"+key+"'>"+key+"</td>\n";
-				result = result + "<td>"+key+"</td>\n";
+				result = result + "<td><a href='https://gamesdb.gog.com/platforms/test/external_releases/"+key+"'>"+StringEscapeUtils.escapeHtml4(key)+"</td>\n";
+				result = result + "<td>"+StringEscapeUtils.escapeHtml4(key)+"</td>\n";
 				result = result + "<td>\n";
-				result = result + ProcessGalaxyResponse.idsToTitles.get(key);
+				result = result + StringEscapeUtils.escapeHtml4(ProcessGalaxyResponse.idsToTitles.get(key));
 				result = result + "</td>\n";
+				//probally want to change spaces to pluses
+				result = result + "<td><a href='https://www.igdb.com/search?type=1&q="+StringEscapeUtils.escapeHtml4(ProcessGalaxyResponse.idsToTitles.get(key)).replace(" ", "+")+"'>"+StringEscapeUtils.escapeHtml4(ProcessGalaxyResponse.idsToTitles.get(key))+"</td>\n";
 				result = result + "</tr>\n";
             
 			}
