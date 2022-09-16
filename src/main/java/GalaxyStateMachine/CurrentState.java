@@ -1,6 +1,16 @@
 package GalaxyStateMachine;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.NullNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 public enum CurrentState {
+	
 	get_capabilities {
 		@Override
 		public CurrentState nextState() {
@@ -8,8 +18,7 @@ public enum CurrentState {
 		}
 
 		@Override
-		public
-		String remoteMethodRequestToMake() {
+		public String remoteMethodRequestToMake() {
 			return "get_capabilities";
 		}
 	},
@@ -20,20 +29,32 @@ public enum CurrentState {
 		}
 
 		@Override
-		public
-		String remoteMethodRequestToMake() {
+		public String remoteMethodRequestToMake() {
 			return "initialize_cache";
+		}
+		@Override
+		public ObjectNode remoteParametersToMake() {
+			ObjectMapper mapper = new ObjectMapper();
+			
+			ObjectNode myObjectNode  = mapper.createObjectNode();
+			ObjectNode mySubNode  = mapper.createObjectNode();
+			myObjectNode.put("data", mySubNode);
+			return myObjectNode;
 		}
 	},
 	ping {
 		@Override
 		public CurrentState nextState() {
-			return import_local_games;
+			//Only import once from galaxy side
+			//logger.info(String.valueOf(initialized));
+			//if (!initialized)
+				return import_local_games;
+			//else
+			//	return ping;
 		}
 
 		@Override
-		public
-		String remoteMethodRequestToMake() {
+		public String remoteMethodRequestToMake() {
 			return "ping";
 		}
 	},
@@ -44,8 +65,7 @@ public enum CurrentState {
 		}
 
 		@Override
-		public
-		String remoteMethodRequestToMake() {
+		public String remoteMethodRequestToMake() {
 			return "import_local_games";
 		}
 	},
@@ -56,9 +76,24 @@ public enum CurrentState {
 		}
 
 		@Override
-		public
-		String remoteMethodRequestToMake() {
+		public String remoteMethodRequestToMake() {
 			return "init_authentication";
+		}
+		@Override
+		public ObjectNode remoteParametersToMake() {
+			ObjectMapper mapper = new ObjectMapper();
+			
+			//ObjectNode mySubNode  = mapper.createObjectNode();
+			//mySubNode.put("key","value");
+			
+			//ArrayNode myArrayNode = mapper.createArrayNode();
+			//myArrayNode.add(mySubNode);
+			
+			ObjectNode  myObjectNode = mapper.createObjectNode();
+			
+			
+			myObjectNode.set("stored_credentials", NullNode.getInstance() );//mySubNode);
+			return myObjectNode;
 		}
 	},
 	import_owned_games {
@@ -68,8 +103,7 @@ public enum CurrentState {
 		}
 
 		@Override
-		public
-		String remoteMethodRequestToMake() {
+		public String remoteMethodRequestToMake() {
 			return "import_owned_games";
 		}
 	},
@@ -81,10 +115,22 @@ public enum CurrentState {
 		}
 
 		@Override
-		public
-		String remoteMethodRequestToMake() {
+		public String remoteMethodRequestToMake() {
 			return "start_game_times_import";
 		}
+		@Override
+		public ObjectNode remoteParametersToMake() {
+			ObjectMapper mapper = new ObjectMapper();
+			
+			ArrayNode myObjectArray = mapper.createArrayNode();
+			
+			
+			ObjectNode myObjectNode  = mapper.createObjectNode();
+			myObjectNode.set("game_ids",myObjectArray);
+			
+			return myObjectNode;
+		}
+		
 	},
 	// ping
 	// start_game_times_import,
@@ -95,8 +141,7 @@ public enum CurrentState {
 		}
 
 		@Override
-		public
-		String remoteMethodRequestToMake() {
+		public String remoteMethodRequestToMake() {
 			return "game_time_import_success";
 		}
 	},
@@ -107,20 +152,20 @@ public enum CurrentState {
 		}
 
 		@Override
-		public
-		String remoteMethodRequestToMake() {
+		public String remoteMethodRequestToMake() {
 			return "game_times_import_finished";
 		}
 	},
 	local_game_status_changed {
 		@Override
 		public CurrentState nextState() {
-			return ping;
+			//initialized = true;
+			//return ping;
+			return null;
 		}
 
 		@Override
-		public
-		String remoteMethodRequestToMake() {
+		public String remoteMethodRequestToMake() {
 			return "local_game_status_changed";
 		}
 	},
@@ -138,4 +183,14 @@ public enum CurrentState {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	public ObjectNode remoteParametersToMake() {
+		ObjectMapper mapper = new ObjectMapper();
+
+		return mapper.createObjectNode();
+
+	}
+	
+	//public 	Boolean initialized = false;
+	static Logger logger = LoggerFactory.getLogger("CurrentState");
 }

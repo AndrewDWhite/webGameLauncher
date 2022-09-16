@@ -52,16 +52,14 @@ public class GoGRPCEmulator {
 	}
 
 	private String getTextForState(CurrentState myState, long myId) throws JsonProcessingException {
+		
+
+		ObjectNode requestNode = getNode(new TextNode(String.valueOf(myId)), myState.remoteMethodRequestToMake(), myState.remoteParametersToMake());// NullNode.instance);
 		ObjectMapper mapper = new ObjectMapper();
-
-		ObjectNode myObjectNode = mapper.createObjectNode();
-
-		ObjectNode requestNode = getNode(new TextNode(String.valueOf(myId)), myState.remoteMethodRequestToMake(), myObjectNode);// NullNode.instance);
-		mapper = new ObjectMapper();
 		return mapper.writeValueAsString(requestNode);
 	}
 
-	public void runMe() throws IOException {
+	public void runMe() throws IOException, InterruptedException {
 		// py -3.7-32 generic.py token 8488
 		ServerSocket serverSocket = ServerSocketFactory.getDefault().createServerSocket(8488);
 		logger.info("lets go");
@@ -87,6 +85,8 @@ public class GoGRPCEmulator {
 			//TODO something if needed
 			logger.info("<< " + read);
 			logger.info("end loop");
+			//TODO Seems to be needed? or we need to watch states for errors and retry
+			Thread.sleep(1000);
 		}
 		socket.close();
 
