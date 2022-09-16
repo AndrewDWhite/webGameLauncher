@@ -73,7 +73,7 @@ public class GoGRPCEmulator {
 
 		CurrentState myState = CurrentState.get_capabilities;
 
-		while (true) {
+		while (!out.checkError()) {
 
 			String json = getTextForState(myState, myId);
 			logger.info("start loop");
@@ -88,6 +88,7 @@ public class GoGRPCEmulator {
 			logger.info("<< " + read);
 			logger.info("end loop");
 		}
+		socket.close();
 
 	}
 }
