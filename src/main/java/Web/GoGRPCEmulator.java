@@ -26,6 +26,7 @@ import GalaxyStateMachine.CurrentState;
 public class GoGRPCEmulator {
 
 	static Logger logger = LoggerFactory.getLogger("GoGRPCEmulator");
+	static public Boolean initialized = false;
 
 	// Protocol constants
 	protected static final String VERSION_2_0 = "2.0";

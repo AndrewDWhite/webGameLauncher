@@ -8,6 +8,8 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import Web.GoGRPCEmulator;
+
 public enum CurrentState {
 	
 	get_capabilities {
@@ -46,10 +48,10 @@ public enum CurrentState {
 		public CurrentState nextState() {
 			//Only import once from galaxy side
 			//logger.info(String.valueOf(initialized));
-			//if (!initialized)
+			if (!GoGRPCEmulator.initialized)
 				return import_local_games;
-			//else
-			//	return ping;
+			else
+				return ping;
 		}
 
 		@Override
@@ -158,9 +160,9 @@ public enum CurrentState {
 	local_game_status_changed {
 		@Override
 		public CurrentState nextState() {
-			//initialized = true;
+			//TODO prevent others from changing at the same time
+			GoGRPCEmulator.initialized = true;
 			return ping;
-			//return null;
 		}
 
 		@Override
@@ -190,6 +192,5 @@ public enum CurrentState {
 
 	}
 	
-	//public 	Boolean initialized = false;
 	static Logger logger = LoggerFactory.getLogger("CurrentState");
 }
