@@ -56,6 +56,7 @@ public class WebController {
 				+ "                   <thead>\n<tr>\n"
 				;
 		//TODO write header for each field
+		result = result + "<iframe name='dummyframe' id='dummyframe' style='display: none;'></iframe>";
 		result = result + "<th>"+"link to play"+"</th>\n";
 		//ProcessGalaxyResponse.idsToTitles
 		result = result + "<th>id</th>\n";
@@ -65,7 +66,7 @@ public class WebController {
 			for (String key : ProcessGalaxyResponse.idsToTitles.keySet()) {
 				logger.info(key);
 				result = result + "<tr>\n";
-				result = result + "<td><form action='/start' method='post'>"
+				result = result + "<td><form action='/start' target='dummyframe' method='post'>"
 						+ "    <button type='submit' name='id' value='"+StringEscapeUtils.escapeHtml4(key)+"' class='btn-link'>"+StringEscapeUtils.escapeHtml4(key)+"</button>\r\n"
 						+ "</form></td>\n";
 				result = result + "<td>"+StringEscapeUtils.escapeHtml4(key)+"</td>\n";
