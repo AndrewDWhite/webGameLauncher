@@ -45,8 +45,7 @@ public class Main {
 				});
 				
 				//TODO switch to always run on a schedule (also do to above as well)
-				CountDownLatch lock = new CountDownLatch(1000);
-
+				
 				ScheduledExecutorService executorScheduled = Executors.newScheduledThreadPool(1);
 				ScheduledFuture<?> future = executorScheduled.scheduleAtFixedRate(() -> {
 					ProcessGalaxyResponse responder = new ProcessGalaxyResponse();
@@ -56,14 +55,7 @@ public class Main {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-				    lock.countDown();
 				}, 3000, 5000, TimeUnit.MILLISECONDS);
-
-				//lock.await(1000, TimeUnit.MILLISECONDS);
-				lock.await();
-				future.cancel(true);
-		
-		
 		
 		
 	}
