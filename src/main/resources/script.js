@@ -35,6 +35,11 @@ function myTableUpdatesFunction() {
 		//Launch (x)
 		if (controllers[0].buttons[2].touched) {
 			//navigator.clipboard.writeText($('#mytable').DataTable().row({ selected: true }).data()[2]);
+			fetch("/start", {
+				method: "POST",
+				body: "id=" + $('#mytable').DataTable().row({ selected: true }).data()[1]
+			});
+
 			myStartTime = Date.now();
 		}
 
