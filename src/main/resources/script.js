@@ -1,6 +1,6 @@
 
 function myOpenGalaxyFunction() {
-	window.open('goggalaxy://openGameView/test_' + $('#mytable').DataTable().row({ selected: true }).data()[11], '_self');
+	window.open('goggalaxy://openGameView/test_' + $('#mytable').DataTable().row({ selected: true }).data()[1], '_self');
 }
 
 function myTableUpdatesFunction() {

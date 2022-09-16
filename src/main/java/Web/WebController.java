@@ -95,7 +95,7 @@ public class WebController {
 				+ "                    {\n"
 				+ "                      select: {style: 'single'},\n"
 				+ "                      columnDefs: [\n"
-				+ "                        {visible: false, targets: [11] }\n"
+				+ "                        {visible: false, targets: [1] }\n"
 				+ "                       ]\n"
 				+ "                    }\n"
 				+ "                  );\n"
