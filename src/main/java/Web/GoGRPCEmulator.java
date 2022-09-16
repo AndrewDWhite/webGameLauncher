@@ -31,7 +31,7 @@ public class GoGRPCEmulator {
 	public static LinkedTransferQueue<String> requestedGameIdRuns = new LinkedTransferQueue<String>();
 
 	private void processWebRequests(GenerateMessage myGenerator) throws InterruptedException, JsonProcessingException {
-		logger.info("processing web requests");
+		logger.debug("processing web requests");
 		while (!requestedGameIdRuns.isEmpty()) {
 			logger.info("Processing requested run");
 			String id = requestedGameIdRuns.take();
@@ -62,14 +62,14 @@ public class GoGRPCEmulator {
 			// transitioning to the next state
 			if (myOutMessages.isEmpty()) {
 				Duration duration = new Duration(timeLastSend, DateTime.now());
-				logger.info(String.valueOf(duration.toStandardSeconds().getSeconds()));
+				logger.debug(String.valueOf(duration.toStandardSeconds().getSeconds()));
 				if (duration.toStandardSeconds().getSeconds() > 3) {
 
 					timeLastSend = DateTime.now();
 					String json = myGenerator.getTextForState(myState);
 					logger.info(">> " + json);
 					myOutMessages.add(json);
-					logger.info("len: " + myOutMessages.size());
+					logger.debug("len: " + myOutMessages.size());
 					//TODO only change on no errors?
 					myState = myState.nextState();
 				}

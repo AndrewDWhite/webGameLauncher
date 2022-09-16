@@ -145,6 +145,10 @@ public enum CurrentState {
 		public String remoteMethodRequestToMake() {
 			return "game_time_import_success";
 		}
+		@Override
+		public Boolean remoteMethodRequestToMakeIsNotification() {
+			return true;
+		}
 	},
 	game_times_import_finished {
 		@Override
@@ -155,6 +159,10 @@ public enum CurrentState {
 		@Override
 		public String remoteMethodRequestToMake() {
 			return "game_times_import_finished";
+		}
+		@Override
+		public Boolean remoteMethodRequestToMakeIsNotification() {
+			return true;
 		}
 	},
 	local_game_status_changed {
@@ -168,6 +176,10 @@ public enum CurrentState {
 		@Override
 		public String remoteMethodRequestToMake() {
 			return "local_game_status_changed";
+		}
+		@Override
+		public Boolean remoteMethodRequestToMakeIsNotification() {
+			return true;
 		}
 	},
 	// start_game_times_import,
@@ -183,6 +195,10 @@ public enum CurrentState {
 	public String remoteMethodRequestToMake() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	public Boolean remoteMethodRequestToMakeIsNotification() {
+		return false;
 	}
 
 	public ObjectNode remoteParametersToMake() {

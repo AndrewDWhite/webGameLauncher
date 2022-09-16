@@ -26,7 +26,7 @@ public class GenerateMessage {
 		myObjectNode.put("game_id", idGame);
 		params = myObjectNode;
 
-		ObjectNode myNodeToReturn = getNode(NullNode.getInstance(),"launch_game", params);
+		ObjectNode myNodeToReturn = getNodeNotification("launch_game", params);
 		logger.info("Here generated node");
 		String myFinalResult = getTextForNode(myNodeToReturn);
 		logger.info(myFinalResult);
@@ -51,6 +51,11 @@ public class GenerateMessage {
 		myId++;
 		return result;
 	}
+	public ObjectNode getNodeNotification(String method, JsonNode params) {
+
+		ObjectNode result = getNode(NullNode.getInstance(), method, params);
+		return result;
+	}
 
 	private ObjectNode getNode(ValueNode id, String method, JsonNode params) {
 		ObjectMapper mapper = new ObjectMapper();
@@ -70,7 +75,12 @@ public class GenerateMessage {
 
 	public String getTextForState(CurrentState myState) throws JsonProcessingException {
 
-		ObjectNode requestNode = getNode(myState.remoteMethodRequestToMake(), myState.remoteParametersToMake());// NullNode.instance);
+		ObjectNode requestNode;
+		if (!myState.remoteMethodRequestToMakeIsNotification()) {
+			requestNode = getNode(myState.remoteMethodRequestToMake(), myState.remoteParametersToMake());
+		} else { // NullNode.instance);
+			requestNode = getNodeNotification(myState.remoteMethodRequestToMake(), myState.remoteParametersToMake());
+		}
 		return getTextForNode(requestNode);
 	}
 
