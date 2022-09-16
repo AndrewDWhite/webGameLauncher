@@ -33,7 +33,7 @@ function myTableUpdatesFunction() {
 		}
 		//Copy to clipboard (x)
 		if (controllers[0].buttons[2].touched) {
-			navigator.clipboard.writeText($('#mytable').DataTable().row({ selected: true }).data()[17]);
+			navigator.clipboard.writeText($('#mytable').DataTable().row({ selected: true }).data()[2]);
 			myStartTime = Date.now();
 		}
 
@@ -45,7 +45,7 @@ function myTableUpdatesFunction() {
 		}
 		//alert command to open galaxy page (y)
 		if (controllers[0].buttons[3].touched) {
-			alert('goggalaxy://openGameView/test_' + $('#mytable').DataTable().row({ selected: true }).data()[11]);
+			alert('goggalaxy://openGameView/test_' + $('#mytable').DataTable().row({ selected: true }).data()[1]);
 			myStartTime = Date.now();
 		}
 
