@@ -159,8 +159,8 @@ public enum CurrentState {
 		@Override
 		public CurrentState nextState() {
 			//initialized = true;
-			//return ping;
-			return null;
+			return ping;
+			//return null;
 		}
 
 		@Override

@@ -85,7 +85,7 @@ public class GoGRPCEmulator {
 			logger.info(">> "+ json);
 			String read = in.readLine();
 			
-			myMessages.add(StringEscapeUtils.escapeHtml4(read));
+			myMessages.add(read);
 			//TODO something if needed
 			logger.info("<< " + read);
 			logger.info("end loop");
