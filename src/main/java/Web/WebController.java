@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import GalaxyStateMachine.ProcessGalaxyResponse;
+import Global.Globals;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -63,10 +64,12 @@ public class WebController {
 		result = result + "<th>title</th>\n";
 		result = result + "<th>search on igdb</th>\n";
 		result = result + "</tr>\n</thead>\n<tbody>\n";
-			for (String key : ProcessGalaxyResponse.idsToTitles.keySet()) {
+		for (Integer port: Globals.plugins.keySet()) {
+			for (String key : Globals.plugins.get(port).idsToTitles.keySet()) {
 				logger.info(key);
 				result = result + "<tr>\n";
 				result = result + "<td><form action='/start' target='dummyframe' method='post'>"
+						+ "     <input type='hidden' id='port' name='port' value='"+String.valueOf(port)+"'>"
 						+ "    <button type='submit' name='id' value='"+StringEscapeUtils.escapeHtml4(key)+"' class='btn-link'>"+StringEscapeUtils.escapeHtml4(key)+"</button>\r\n"
 						+ "</form></td>\n";
 				result = result + "<td>"+StringEscapeUtils.escapeHtml4(key)+"</td>\n";
@@ -78,6 +81,7 @@ public class WebController {
 				result = result + "</tr>\n";
             
 			}
+		}
 		
 		result = result +
 				"</tbody>\n"
@@ -289,9 +293,11 @@ public class WebController {
 	//TODO add security for this to only launch for authorized
 	@RequestMapping(path = "/start", method = RequestMethod.POST)
 	@ResponseBody
-	String start(@RequestBody String id) {
-		GoGRPCEmulator.requestedGameIdRuns.add(id.substring(3));
-		return "running : "+ id ;
+	String start(String id, String port) {
+		logger.info("request: "+id+" "+port);
+		logger.info(String.valueOf(Integer.parseInt(port)));
+		Globals.plugins.get(Integer.parseInt(port)).emulator.requestedGameIdRuns.add(id);
+		return "running : "+ id +" from: "+port;
 	}
 
 }

@@ -25,10 +25,10 @@ public class GoGRPCEmulator {
 	static Logger logger = LoggerFactory.getLogger("GoGRPCEmulator");
 	static public Boolean initialized = false;
 
-	public static LinkedTransferQueue<String> myMessages = new LinkedTransferQueue<String>();
+	public LinkedTransferQueue<String> myMessages = new LinkedTransferQueue<String>();
 	LinkedTransferQueue<String> myOutMessages = new LinkedTransferQueue<String>();
 
-	public static LinkedTransferQueue<String> requestedGameIdRuns = new LinkedTransferQueue<String>();
+	LinkedTransferQueue<String> requestedGameIdRuns = new LinkedTransferQueue<String>();
 
 	private void processWebRequests(GenerateMessage myGenerator) throws InterruptedException, JsonProcessingException {
 		logger.debug("processing web requests");
@@ -42,9 +42,9 @@ public class GoGRPCEmulator {
 		}
 	}
 
-	public void runMe() throws IOException, InterruptedException {
+	public void runMe(int port) throws IOException, InterruptedException {
 		// py -3.7-32 generic.py token 8488
-		ServerSocket serverSocket = ServerSocketFactory.getDefault().createServerSocket(8488);
+		ServerSocket serverSocket = ServerSocketFactory.getDefault().createServerSocket(port);
 		logger.info("lets go");
 		Socket socket = serverSocket.accept();
 		PrintWriter out = new PrintWriter(socket.getOutputStream(), true);

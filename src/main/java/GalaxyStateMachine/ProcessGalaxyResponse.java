@@ -16,6 +16,7 @@ import Web.GoGRPCEmulator;
 public class ProcessGalaxyResponse {
 	
 	static Logger logger = LoggerFactory.getLogger("ProcessGalaxyResponse");
+	public GoGRPCEmulator emulator = new GoGRPCEmulator();
 	
 	//TODO make this so nothing else writes to it
 	public static HashMap<String,String> idsToTitles = new HashMap<String, String>();
@@ -25,8 +26,8 @@ public class ProcessGalaxyResponse {
 		
 		logger.info("lets check");
 
-		while (!GoGRPCEmulator.myMessages.isEmpty()) {
-			String myValue = GoGRPCEmulator.myMessages.remove();
+		while (!emulator.myMessages.isEmpty()) {
+			String myValue = emulator.myMessages.remove();
 			logger.info(myValue);
 			values.add(myValue);
 			
