@@ -38,7 +38,7 @@ function myTableUpdatesFunction() {
 			fetch("/start", {
 				method: "POST",
 				body: "id=" + $('#mytable').DataTable().row({ selected: true }).data()[1]
-				       +" port=" + $('#mytable').DataTable().row({ selected: true }).data()[4]
+					+ " port=" + $('#mytable').DataTable().row({ selected: true }).data()[4]
 			});
 
 			myStartTime = Date.now();
@@ -58,3 +58,32 @@ function myTableUpdatesFunction() {
 
 	}
 }
+
+function slowlyClearStack() {
+	if (myStack.length > 0) {
+		var myCurrentEntry = myStack.shift();
+		fetch("/img", {
+			method: "POST",
+			body: new URLSearchParams({
+				"id": myCurrentEntry.key, "port": +myCurrentEntry.value
+			})
+		}).then((response) => {
+			var myCombinedId = '#myCoverImage'.concat(myCurrentEntry.key);
+			var myPromisedResponse = response.text()
+			async function awaitThePromise() {
+				const myFinalResponseFromThePromise = await myPromisedResponse;
+				$(myCombinedId).append(myFinalResponseFromThePromise)
+			}
+
+			awaitThePromise();
+
+
+		}
+		);
+	}
+}
+
+var myStack = [];
+
+setInterval(() => slowlyClearStack(), 2000);
+

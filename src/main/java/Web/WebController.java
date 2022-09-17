@@ -2,6 +2,15 @@ package Web;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.http.ParseException;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.methods.RequestBuilder;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -11,11 +20,30 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.api.igdb.apicalypse.APICalypse;
+import com.api.igdb.exceptions.RequestException;
+import com.api.igdb.request.IGDBWrapper;
+import com.api.igdb.request.ProtoRequestKt;
+import com.api.igdb.request.TwitchAuthenticator;
+import com.api.igdb.utils.Endpoints;
+import com.api.igdb.utils.ImageBuilderKt;
+import com.api.igdb.utils.ImageSize;
+import com.api.igdb.utils.ImageType;
+import com.api.igdb.utils.TwitchToken;
+
 import GalaxyStateMachine.ProcessGalaxyResponse;
 import Global.Globals;
+import proto.Artwork;
+import proto.Cover;
+import proto.Game;
+import proto.GameResult;
+import proto.Search;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @EnableAutoConfiguration
@@ -35,7 +63,7 @@ public class WebController {
 
 	@RequestMapping("/games")
 	@ResponseBody
-	String gamesHome() {
+	String gamesHome() throws RequestException {
 		String result = "<html>\n" + "    <head>\n" + "                <meta charset='UTF-8'>\n"
 				+ "                <title>Games</title>\n" + "    </head>\n" + "    <body>\n"
 				+ "                <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js'></script>\n"
@@ -56,7 +84,9 @@ public class WebController {
 		result = result + "<th>title</th>\n";
 		result = result + "<th>search on igdb</th>\n";
 		result = result + "<th>plugin port</th>\n";
+		result = result + "<th>image</th>\n";
 		result = result + "</tr>\n</thead>\n<tbody>\n";
+
 		for (Integer port : Globals.plugins.keySet()) {
 			for (String key : Globals.plugins.get(port).idsToTitles.keySet()) {
 				logger.info(key);
@@ -76,6 +106,22 @@ public class WebController {
 						+ "'>" + StringEscapeUtils.escapeHtml4(ProcessGalaxyResponse.idsToTitles.get(key)) + "</td>\n";
 				result = result + "<td>\n";
 				result = result + String.valueOf(port);
+				result = result + "</td>\n";
+				result = result + "<td>\n";
+
+				logger.info("Enrichment");
+				logger.info(StringEscapeUtils.escapeHtml4(ProcessGalaxyResponse.idsToTitles.get(key)));
+
+				result = result +" <script type='text/javascript'>"
+						+ "  myStack.push({\"key\" : \""+StringEscapeUtils.escapeHtml4(key)+"\", "
+								+ "\"value\":\""+StringEscapeUtils.escapeHtml4(String.valueOf(port))+"\"});\n"
+						+"</script>\n"
+						
+						;
+				result = result 
+						+"<div id='myCoverImage"+StringEscapeUtils.escapeHtml4(key)+"' />";
+						
+				
 				result = result + "</td>\n";
 				result = result + "</tr>\n";
 
@@ -209,6 +255,78 @@ public class WebController {
 	@ResponseBody
 	String gameCss() throws IOException {
 		return IOUtils.toString(ClassLoader.getSystemResourceAsStream("style.css"));
+	}
+
+	@RequestMapping(path = "/img", method = RequestMethod.POST)
+	@ResponseBody
+	String img(String id, String port) throws RequestException {
+
+		logger.info("image request: "+id+ " : " + port);
+		String result = new String();
+		logger.info("logging in for enrichment");
+		TwitchAuthenticator tAuth = TwitchAuthenticator.INSTANCE;
+		TwitchToken token = tAuth.requestTwitchToken(Globals.twitchClientId, Globals.twitchPassword);
+
+		IGDBWrapper wrapper = IGDBWrapper.INSTANCE;
+		wrapper.setCredentials(Globals.twitchClientId, token.getAccess_token());
+		logger.info("logged in");
+		
+		logger.info(id);
+		String mySearchString = StringEscapeUtils.escapeHtml4(Globals.plugins.get(port).idsToTitles.get(id));
+		logger.info(mySearchString);
+		
+		//String mySearchString = "zelda";// StringEscapeUtils.escapeHtml4(ProcessGalaxyResponse.idsToTitles.get(key));
+		logger.info(mySearchString);
+		
+		APICalypse apicalypse = new APICalypse().search(mySearchString)
+				.fields("*")//"*")
+				.limit(1);
+		logger.info(apicalypse.buildQuery());
+		
+		List<Game> searchResult = ProtoRequestKt.games(wrapper, apicalypse);
+		
+		for (Game resultOfSearchTop : searchResult) {
+			logger.info(resultOfSearchTop.getAllFields().toString());
+			Cover myCover = resultOfSearchTop.getCover();
+			String coverId = String.valueOf(myCover.getId());
+			
+			
+			apicalypse = new APICalypse().where("id = "+coverId+";")
+					.fields("url");
+			logger.info(apicalypse.buildQuery());
+			
+			List<Cover> myCoverSearchResult = ProtoRequestKt.covers(wrapper, apicalypse);
+			logger.info(myCoverSearchResult.toString());
+			for (Cover myNewCover : myCoverSearchResult) {
+			result = result + "https:"+myNewCover.getUrl();
+			}
+			
+			/*CloseableHttpClient httpclient = HttpClients.createDefault();
+	        try {
+	            HttpUriRequest httppost = RequestBuilder.post()
+	                    .setUri(new URI("https://api.igdb.com/v4/covers"))//games
+	                    .addHeader("Client-ID", twitchClientId)
+	                    .addHeader("Authorization", "Bearer "+ token.getAccess_token())
+	                    .setEntity(new StringEntity("fields url; where id="+coverId+";",//apicalypse.buildQuery(),
+	                    		ContentType.TEXT_HTML))
+	                    .build();
+	 
+	            CloseableHttpResponse response = httpclient.execute(httppost);
+	            try {
+	                logger.info(EntityUtils.toString(response.getEntity()));
+	            } finally {
+	                response.close();
+	            }
+	        } finally {
+	            httpclient.close();
+	        }*/
+			
+		}
+
+		result = "<img alt='cover' src='"+result+"'>";
+		logger.info(result);
+		return result;
+
 	}
 
 	/*
