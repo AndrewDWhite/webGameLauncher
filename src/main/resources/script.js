@@ -37,8 +37,10 @@ function myTableUpdatesFunction() {
 			//navigator.clipboard.writeText($('#mytable').DataTable().row({ selected: true }).data()[2]);
 			fetch("/start", {
 				method: "POST",
-				body: "id=" + $('#mytable').DataTable().row({ selected: true }).data()[1]
-					+ " port=" + $('#mytable').DataTable().row({ selected: true }).data()[4]
+				body:new URLSearchParams({
+				"id" : $('#mytable').DataTable().row({ selected: true }).data()[1],
+				"port" : $('#mytable').DataTable().row({ selected: true }).data()[4]
+			}) 
 			});
 
 			myStartTime = Date.now();
@@ -65,7 +67,8 @@ function slowlyClearStack() {
 		fetch("/img", {
 			method: "POST",
 			body: new URLSearchParams({
-				"id": myCurrentEntry.key, "port": +myCurrentEntry.value
+				"id": myCurrentEntry.key,
+				"port": +myCurrentEntry.value
 			})
 		}).then((response) => {
 			var myCombinedId = '#myCoverImage'.concat(myCurrentEntry.key);
