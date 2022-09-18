@@ -2,7 +2,7 @@
 An early in progress open source implementation of a web based game launcher supporting galaxy's plugin api. Currently only some of the api calls that galaxy makes to plugins are implemented (enough to startup the generic plugin and retrieve data from an already existing installation). Early controller support is implemented for firefox.
 
 ## Building the Launcher
-The project can be build with maven `mvn clean package` .
+The project can be build with maven `mvn clean package` . Update the global variables with your twitch application information, if you want igdb image enrichment.
 
 ## Running the launcher
 First start the launcher's main java function.
