@@ -13,5 +13,6 @@ While the launcher is running you can run, currently one, plugin manually and ha
 You can start up the [generic plugin](https://github.com/AndrewDWhite/GalaxyGenericImporterPlugin) with the following command.
 `py -3.7-32 generic.py token 8488`
 
+Once it has loaded you can visit `http://localhost:8080/games` to see your library. You may need to refresh a few times until your library has completely loaded depending on the plugin.
 
 <img width="894" alt="user interface" src="https://user-images.githubusercontent.com/972757/190617998-fb50106d-ec96-42c2-b9a6-7921df6cbce4.png">
