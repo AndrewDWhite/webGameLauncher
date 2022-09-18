@@ -24,10 +24,24 @@ jobs:
         cache: maven
     - name: Build with Maven
       run: mvn clean -B package --file pom.xml
-      
-    - name: Upload a Build Artifact
-      uses: actions/upload-artifact@v3.1.0
+    - name: Upload result
+      uses: actions/upload-artifact@v1
       with:
-        # A file, directory or wildcard pattern that describes what to upload
+        name: webGameLauncher-0.0.1-SNAPSHOT-jar-with-dependencies.${{steps.version.outputs.prop}}.${{ github.run_number }}-${{ github.sha }}.jar
         path: target/webGameLauncher-0.0.1-SNAPSHOT-jar-with-dependencies.jar
+        
+    - name: Automatic Releases
+      uses: marvinpinto/action-automatic-releases@latest
+      with:
+        # GitHub secret token
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        # Git tag (for automatic releases)
+        automatic_release_tag: Prototype_${{steps.version.outputs.prop}}.${{ github.run_number }}-${{ github.sha }}
+        # Should this release be marked as a pre-release?
+        prerelease: True
+        # Release title (for automatic releases)
+        title: Prototype_${{steps.version.outputs.prop}}.${{ github.run_number }}-${{ github.sha }}
+        # Assets to upload to the release
+        files: target/webGameLauncher-0.0.1-SNAPSHOT-jar-with-dependencies.jar
+
   
