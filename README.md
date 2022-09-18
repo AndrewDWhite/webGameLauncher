@@ -1,7 +1,7 @@
 # webGameLauncher
 An early in progress open source implementation of a web based game launcher supporting [galaxy's plugin api](https://galaxy-integrations-python-api.readthedocs.io/en/latest/) [[src]](https://github.com/gogcom/galaxy-integrations-python-api). This project was created in order to learn how the API works to facilitate creating an integration test for plugin developers.
 * Currently only some of the api calls that galaxy makes to plugins are implemented (enough to startup the generic plugin and retrieve data from an already existing installation) and some incorrectly. See the [issues tab](https://github.com/AndrewDWhite/webGameLauncher/issues) for more details.
-* It includes some additional features for experimenting on community requested features such as controller support, implemented for firefox, and metaddata pulling from other sources.
+* It includes some additional features for experimenting on community requested features such as controller support, implemented for firefox, and meta-data pulling from other sources.
 
 ## Building the Launcher
 The project can be build with maven `mvn clean package` . Update the global variables with your twitch application information, if you want igdb image enrichment.
