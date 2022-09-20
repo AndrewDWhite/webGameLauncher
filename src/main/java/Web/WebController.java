@@ -43,7 +43,9 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.LinkedTransferQueue;
 
 @RestController
 @EnableAutoConfiguration
@@ -112,16 +114,13 @@ public class WebController {
 				logger.info("Enrichment");
 				logger.info(StringEscapeUtils.escapeHtml4(ProcessGalaxyResponse.idsToTitles.get(key)));
 
-				result = result +" <script type='text/javascript'>"
-						+ "  myStack.push({\"key\" : \""+StringEscapeUtils.escapeHtml4(key)+"\", "
-								+ "\"value\":\""+StringEscapeUtils.escapeHtml4(String.valueOf(port))+"\"});\n"
-						+"</script>\n"
-						
-						;
-				result = result 
-						+"<div id='myCoverImage"+StringEscapeUtils.escapeHtml4(key)+"' />";
-						
-				
+				result = result + " <script type='text/javascript'>" + "  myStack.push({\"key\" : \""
+						+ StringEscapeUtils.escapeHtml4(key) + "\", " + "\"value\":\""
+						+ StringEscapeUtils.escapeHtml4(String.valueOf(port)) + "\"});\n" + "</script>\n"
+
+				;
+				result = result + "<div id='myCoverImage" + StringEscapeUtils.escapeHtml4(key) + "' />";
+
 				result = result + "</td>\n";
 				result = result + "</tr>\n";
 
@@ -261,7 +260,7 @@ public class WebController {
 	@ResponseBody
 	String img(String id, String port) throws RequestException {
 
-		logger.info("image request: "+id+ " : " + port);
+		logger.info("image request: " + id + " : " + port);
 		String result = new String();
 		logger.info("logging in for enrichment");
 		TwitchAuthenticator tAuth = TwitchAuthenticator.INSTANCE;
@@ -270,60 +269,52 @@ public class WebController {
 		IGDBWrapper wrapper = IGDBWrapper.INSTANCE;
 		wrapper.setCredentials(Globals.twitchClientId, token.getAccess_token());
 		logger.info("logged in");
-		
+
 		logger.info(id);
 		String mySearchString = StringEscapeUtils.escapeHtml4(Globals.plugins.get(port).idsToTitles.get(id));
 		logger.info(mySearchString);
-		
-		//String mySearchString = "zelda";// StringEscapeUtils.escapeHtml4(ProcessGalaxyResponse.idsToTitles.get(key));
+
+		// String mySearchString = "zelda";//
+		// StringEscapeUtils.escapeHtml4(ProcessGalaxyResponse.idsToTitles.get(key));
 		logger.info(mySearchString);
-		
-		APICalypse apicalypse = new APICalypse().search(mySearchString)
-				.fields("*")//"*")
+
+		APICalypse apicalypse = new APICalypse().search(mySearchString).fields("*")// "*")
 				.limit(1);
 		logger.info(apicalypse.buildQuery());
-		
+
 		List<Game> searchResult = ProtoRequestKt.games(wrapper, apicalypse);
-		
+
 		for (Game resultOfSearchTop : searchResult) {
 			logger.info(resultOfSearchTop.getAllFields().toString());
 			Cover myCover = resultOfSearchTop.getCover();
 			String coverId = String.valueOf(myCover.getId());
-			
-			
-			apicalypse = new APICalypse().where("id = "+coverId+";")
-					.fields("url");
+
+			apicalypse = new APICalypse().where("id = " + coverId + ";").fields("url");
 			logger.info(apicalypse.buildQuery());
-			
+
 			List<Cover> myCoverSearchResult = ProtoRequestKt.covers(wrapper, apicalypse);
 			logger.info(myCoverSearchResult.toString());
 			for (Cover myNewCover : myCoverSearchResult) {
-			result = result + "https:"+myNewCover.getUrl();
+				result = result + "https:" + myNewCover.getUrl();
 			}
-			
-			/*CloseableHttpClient httpclient = HttpClients.createDefault();
-	        try {
-	            HttpUriRequest httppost = RequestBuilder.post()
-	                    .setUri(new URI("https://api.igdb.com/v4/covers"))//games
-	                    .addHeader("Client-ID", twitchClientId)
-	                    .addHeader("Authorization", "Bearer "+ token.getAccess_token())
-	                    .setEntity(new StringEntity("fields url; where id="+coverId+";",//apicalypse.buildQuery(),
-	                    		ContentType.TEXT_HTML))
-	                    .build();
-	 
-	            CloseableHttpResponse response = httpclient.execute(httppost);
-	            try {
-	                logger.info(EntityUtils.toString(response.getEntity()));
-	            } finally {
-	                response.close();
-	            }
-	        } finally {
-	            httpclient.close();
-	        }*/
-			
+
+			/*
+			 * CloseableHttpClient httpclient = HttpClients.createDefault(); try {
+			 * HttpUriRequest httppost = RequestBuilder.post() .setUri(new
+			 * URI("https://api.igdb.com/v4/covers"))//games .addHeader("Client-ID",
+			 * twitchClientId) .addHeader("Authorization", "Bearer "+
+			 * token.getAccess_token()) .setEntity(new
+			 * StringEntity("fields url; where id="+coverId+";",//apicalypse.buildQuery(),
+			 * ContentType.TEXT_HTML)) .build();
+			 * 
+			 * CloseableHttpResponse response = httpclient.execute(httppost); try {
+			 * logger.info(EntityUtils.toString(response.getEntity())); } finally {
+			 * response.close(); } } finally { httpclient.close(); }
+			 */
+
 		}
 
-		result = "<img alt='cover' src='"+result+"'>";
+		result = "<img alt='cover' src='" + result + "'>";
 		logger.info(result);
 		return result;
 
@@ -358,5 +349,30 @@ public class WebController {
 		Globals.plugins.get(Integer.parseInt(port)).emulator.requestedGameIdRuns.add(id);
 		return "running : " + id + " from: " + port;
 	}
+
+	// TODO add security for this to only launch for authorized
+	@RequestMapping(path = "/notificationURINext", method = RequestMethod.POST)
+	@ResponseBody
+	String notificationURINext(String port) throws NumberFormatException, InterruptedException {
+		logger.info("request notification next");
+		LinkedTransferQueue<HashMap<String, String>> myQueue = Globals.plugins
+				.get(Integer.parseInt(port)).pluginURINotifications;
+		logger.info(String.valueOf(myQueue.size()));
+		String myResult = "";
+		if (myQueue.size() > 0) {
+			HashMap<String, String> myCurrentEntry = myQueue.take();
+			logger.info(myCurrentEntry.toString());
+			
+			for (String myCurrentKey : myCurrentEntry.keySet()) {
+				myResult = myCurrentEntry.get(myCurrentKey);
+			}
+		}
+
+		// TODO remove any unnecessary content
+		logger.info(myResult);
+		return myResult;
+	}
+	
+	
 
 }

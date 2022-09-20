@@ -37,10 +37,10 @@ function myTableUpdatesFunction() {
 			//navigator.clipboard.writeText($('#mytable').DataTable().row({ selected: true }).data()[2]);
 			fetch("/start", {
 				method: "POST",
-				body:new URLSearchParams({
-				"id" : $('#mytable').DataTable().row({ selected: true }).data()[1],
-				"port" : $('#mytable').DataTable().row({ selected: true }).data()[4]
-			}) 
+				body: new URLSearchParams({
+					"id": $('#mytable').DataTable().row({ selected: true }).data()[1],
+					"port": $('#mytable').DataTable().row({ selected: true }).data()[4]
+				})
 			});
 
 			myStartTime = Date.now();
@@ -84,6 +84,25 @@ function slowlyClearStack() {
 		}
 		);
 	}
+}
+
+function getNotificationPluginURI(myPluginURIPort) {
+	fetch("/notificationURINext", {
+		method: "POST",
+		body: new URLSearchParams({
+			"port": myPluginURIPort
+		})
+	}).then((response) => {
+		var myPromisedResponse = response.text()
+		async function awaitThePromise() {
+			const myFinalResponseFromThePromiseURI = await myPromisedResponse;
+			alert(myFinalResponseFromThePromiseURI);
+
+		}
+		awaitThePromise();
+
+	});
+
 }
 
 var myStack = [];
