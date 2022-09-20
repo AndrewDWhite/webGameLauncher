@@ -95,8 +95,8 @@ function getNotificationPluginURI(myPluginURIPort) {
 	}).then((response) => {
 		var myPromisedResponse = response.text()
 		async function awaitThePromise() {
-			const myFinalResponseFromThePromise = await myPromisedResponse;
-			alert(myFinalResponseFromThePromise);
+			const myFinalResponseFromThePromiseURI = await myPromisedResponse;
+			alert(myFinalResponseFromThePromiseURI);
 
 		}
 		awaitThePromise();

@@ -353,7 +353,7 @@ public class WebController {
 	// TODO add security for this to only launch for authorized
 	@RequestMapping(path = "/notificationURINext", method = RequestMethod.POST)
 	@ResponseBody
-	String start(String port) throws NumberFormatException, InterruptedException {
+	String notificationURINext(String port) throws NumberFormatException, InterruptedException {
 		logger.info("request notification next");
 		LinkedTransferQueue<HashMap<String, String>> myQueue = Globals.plugins
 				.get(Integer.parseInt(port)).pluginURINotifications;
@@ -372,5 +372,7 @@ public class WebController {
 		logger.info(myResult);
 		return myResult;
 	}
+	
+	
 
 }
