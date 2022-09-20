@@ -73,7 +73,9 @@ public enum CurrentState {
 	init_authentication {
 		@Override
 		public CurrentState nextState() {
-			return import_owned_games;
+			return pass_login_credentials;
+			//TODO parse capabilities to see if we skip
+			//return import_owned_games;
 		}
 
 		@Override
@@ -97,6 +99,34 @@ public enum CurrentState {
 			return myObjectNode;
 		}
 	},
+	pass_login_credentials {
+		@Override
+		public CurrentState nextState() {
+			return import_owned_games;
+		}
+		@Override
+		public String remoteMethodRequestToMake() {
+			return "pass_login_credentials";
+		}
+		@Override
+		public ObjectNode remoteParametersToMake() {
+			ObjectMapper mapper = new ObjectMapper();
+			
+			ObjectNode  myObjectNode = mapper.createObjectNode();
+			
+			myObjectNode.set("cookies", NullNode.getInstance() );
+			
+			ObjectNode myCredentialsNode = mapper.createObjectNode();
+			//TODO parse from previous message data result user's input
+			myCredentialsNode.put("end_uri", "" );
+			
+			myObjectNode.set("credentials", myCredentialsNode );
+			
+			myObjectNode.set("step", NullNode.getInstance() );
+			return myObjectNode;
+		}
+	},
+	
 	import_owned_games {
 		@Override
 		public CurrentState nextState() {
