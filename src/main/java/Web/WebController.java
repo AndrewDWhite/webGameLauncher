@@ -43,6 +43,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.LinkedTransferQueue;
 
@@ -354,10 +355,18 @@ public class WebController {
 	@ResponseBody
 	String start(String port) throws NumberFormatException, InterruptedException {
 		logger.info("request notification next");
-		LinkedTransferQueue<String> myQueue = Globals.plugins.get(Integer.parseInt(port)).pluginURINotifications;
+		LinkedTransferQueue<HashMap<String, String>> myQueue = Globals.plugins
+				.get(Integer.parseInt(port)).pluginURINotifications;
+		logger.info(String.valueOf(myQueue.size()));
 		String myResult = "";
-		if (myQueue.size() > 0)
-			myResult = myQueue.take();
+		if (myQueue.size() > 0) {
+			HashMap<String, String> myCurrentEntry = myQueue.take();
+			logger.info(myCurrentEntry.toString());
+			
+			for (String myCurrentKey : myCurrentEntry.keySet()) {
+				myResult = myCurrentEntry.get(myCurrentKey);
+			}
+		}
 
 		// TODO remove any unnecessary content
 		logger.info(myResult);

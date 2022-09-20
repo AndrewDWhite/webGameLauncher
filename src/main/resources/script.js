@@ -101,7 +101,7 @@ function getNotificationPluginURI(myPluginURIPort) {
 		}
 		awaitThePromise();
 
-	})
+	});
 
 }
 

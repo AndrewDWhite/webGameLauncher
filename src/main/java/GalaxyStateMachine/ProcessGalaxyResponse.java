@@ -21,7 +21,7 @@ public class ProcessGalaxyResponse {
 
 	// TODO make this so nothing else writes to it
 	public static HashMap<String, String> idsToTitles = new HashMap<String, String>();
-	public LinkedTransferQueue<String> pluginURINotifications = new LinkedTransferQueue<String>();
+	public LinkedTransferQueue<HashMap<String,String>> pluginURINotifications = new LinkedTransferQueue<HashMap<String,String>>();
 
 	public void processQueue() throws IOException {
 		ArrayList<String> values = new ArrayList<String>();
@@ -36,7 +36,8 @@ public class ProcessGalaxyResponse {
 			ObjectMapper objectMapper = new ObjectMapper();
 			JsonNode rootNode = objectMapper.readTree(myValue);
 			JsonNode idNode = rootNode.path("id");
-			logger.info("id: " + idNode.asText());
+			String myReadId = idNode.asText();
+			logger.info("id: " + myReadId);
 
 			JsonNode resultNode = rootNode.path("result");
 			logger.info("result has owned games: " + resultNode.has("owned_games"));
@@ -46,13 +47,13 @@ public class ProcessGalaxyResponse {
 
 			logger.info("result has next_steps: " + resultNode.has("next_step"));
 			if (resultNode.has("next_step"))
-				processNextStep(resultNode);
+				processNextStep(myReadId, resultNode);
 
 		}
 
 	}
 
-	public void processNextStep(JsonNode resultNode) {
+	public void processNextStep(String myReadId, JsonNode resultNode) {
 
 		logger.info(resultNode.toPrettyString());
 		String next_stepType = resultNode.path("next_step").asText();
@@ -62,7 +63,10 @@ public class ProcessGalaxyResponse {
 			JsonNode myAuthParams = resultNode.path("auth_params");
 			String myRead_start_uri = myAuthParams.path("start_uri").asText();
 			logger.info("URI: " + myRead_start_uri);
-			pluginURINotifications.add(myRead_start_uri);
+			
+			HashMap<String,String> myEntryToAdd = new HashMap<String,String>();
+			myEntryToAdd.put(myReadId, myRead_start_uri);
+			pluginURINotifications.add(myEntryToAdd);
 		}
 
 	}
