@@ -1,5 +1,7 @@
 package GalaxyStateMachine;
 
+import java.util.HashMap;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -100,6 +102,7 @@ public enum CurrentState {
 		}
 	},
 	pass_login_credentials {
+		String myURIReturn = "";
 		@Override
 		public CurrentState nextState() {
 			return import_owned_games;
@@ -118,12 +121,17 @@ public enum CurrentState {
 			
 			ObjectNode myCredentialsNode = mapper.createObjectNode();
 			//TODO parse from previous message data result user's input
-			myCredentialsNode.put("end_uri", "" );
+			myCredentialsNode.put("end_uri", myURIReturn );
 			
 			myObjectNode.set("credentials", myCredentialsNode );
 			
 			myObjectNode.set("step", NullNode.getInstance() );
 			return myObjectNode;
+		}
+		@Override
+		public void setValues(HashMap<String, String> myValues) {
+			logger.info("setting returned:" + myValues.toString());
+			myURIReturn =  myValues.get("myURI");
 		}
 	},
 	
@@ -220,6 +228,11 @@ public enum CurrentState {
 	public CurrentState nextState() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public void setValues(HashMap<String, String> myValues) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	public String remoteMethodRequestToMake() {

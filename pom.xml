@@ -68,6 +68,10 @@
 			<id>jitpack.io</id>
 			<url>https://jitpack.io</url>
 		</repository>
+		<repository>
+			<id>fusesource</id>
+			<url>https://repo.fusesource.com/nexus/content/repositories/releases-3rd-party/</url>
+		</repository>
 	</repositories>
 
 
@@ -153,9 +157,9 @@
 		</dependency>
 
 		<dependency>
-			<groupId>com.github.husnjak</groupId>
-			<artifactId>IGDB-API-JVM</artifactId>
-			<version>1.0.5</version>
+			<groupId>io.github.husnjak</groupId>
+			<artifactId>igdb-api-jvm</artifactId>
+			<version>1.0.7</version>
 			<exclusions>
 				<exclusion>
 					<groupId>com.github.kittinunf.fuel</groupId>
@@ -164,6 +168,24 @@
 			</exclusions>
 		</dependency>
 
+		<dependency>
+			<groupId>org.seleniumhq.selenium</groupId>
+			<artifactId>selenium-java</artifactId>
+		</dependency>
+
+
+		<dependency>
+			<groupId>io.github.bonigarcia</groupId>
+			<artifactId>webdrivermanager</artifactId>
+			<version>5.3.1</version>
+		</dependency>
+
+
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>31.1-jre</version>
+		</dependency>
 
 	</dependencies>
 
