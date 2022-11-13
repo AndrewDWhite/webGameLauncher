@@ -157,9 +157,9 @@
 		</dependency>
 
 		<dependency>
-			<groupId>com.github.husnjak</groupId>
-			<artifactId>IGDB-API-JVM</artifactId>
-			<version>1.0.5</version>
+			<groupId>io.github.husnjak</groupId>
+			<artifactId>igdb-api-jvm</artifactId>
+			<version>1.0.7</version>
 			<exclusions>
 				<exclusion>
 					<groupId>com.github.kittinunf.fuel</groupId>
