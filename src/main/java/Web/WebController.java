@@ -77,6 +77,7 @@ public class WebController {
 				+ "                <link rel='stylesheet' type='text/css' href='https://cdn.datatables.net/select/1.3.3/css/select.dataTables.css'>\n"
 				+ "                <link rel='stylesheet' type='text/css' href='/games/style.css'>\n" + "\n"
 				+ "                <button onclick='myOpenGalaxyFunction()' id ='openGalaxyButton'>Open selected in galaxy</button>\n"
+				+ "                <button onclick='getNotificationPluginURI(8488)' id ='openGetNotificationButton'>Open notification in new browser</button>\n"
 				+ "                \n" + "                <table id='mytable' class='display'>\n"
 				+ "                   <thead>\n<tr>\n";
 		// TODO write header for each field
