@@ -11,7 +11,11 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 
+import LocalClient.ClientWebResults;
+import LocalClient.RequestURI;
 import Web.GoGRPCEmulator;
 
 public class ProcessGalaxyResponse {
@@ -21,8 +25,8 @@ public class ProcessGalaxyResponse {
 
 	// TODO make this so nothing else writes to it
 	public static HashMap<String, String> idsToTitles = new HashMap<String, String>();
-	public LinkedTransferQueue<HashMap<String,String>> pluginURINotifications = new LinkedTransferQueue<HashMap<String,String>>();
-
+	public LinkedTransferQueue<HashMap<String,RequestURI>> pluginURINotifications = new LinkedTransferQueue<HashMap<String,RequestURI>>(); 
+	
 	public void processQueue() throws IOException {
 		ArrayList<String> values = new ArrayList<String>();
 
@@ -64,8 +68,12 @@ public class ProcessGalaxyResponse {
 			String myRead_start_uri = myAuthParams.path("start_uri").asText();
 			logger.info("URI: " + myRead_start_uri);
 			
-			HashMap<String,String> myEntryToAdd = new HashMap<String,String>();
-			myEntryToAdd.put(myReadId, myRead_start_uri);
+			String myRead_end_regex = myAuthParams.path("end_uri_regex").asText();
+			logger.info("End REGEX: " + myRead_end_regex);
+			
+			RequestURI myRequestedURI = new RequestURI(myRead_start_uri,myRead_end_regex);
+			HashMap<String, RequestURI> myEntryToAdd = new HashMap<String, RequestURI>();
+			myEntryToAdd.put(myReadId, myRequestedURI);
 			pluginURINotifications.add(myEntryToAdd);
 		}
 
@@ -75,6 +83,7 @@ public class ProcessGalaxyResponse {
 	// "start_uri":
 	// "file:///C:/Users/andyn/AppData/Local/GOG.com/Galaxy/plugins/installed/amazon_c2cd2e29-8b02-35a9-86fc-3faf90255857/splash/index.html?view=splash",
 	// "end_uri_regex": ".*splash_continue.*"}}
+	
 
 	public void processOwned(JsonNode resultNode) {
 		// owned_games

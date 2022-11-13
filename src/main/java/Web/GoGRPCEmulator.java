@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.HashMap;
 import java.util.concurrent.LinkedTransferQueue;
 
 import javax.net.ServerSocketFactory;
@@ -16,9 +17,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 
 import GalaxyStateMachine.CurrentState;
 import GalaxyStateMachine.GenerateMessage;
+import Global.Globals;
+import LocalClient.ClientWebResults;
 
 public class GoGRPCEmulator {
 
@@ -29,6 +36,8 @@ public class GoGRPCEmulator {
 	LinkedTransferQueue<String> myOutMessages = new LinkedTransferQueue<String>();
 
 	LinkedTransferQueue<String> requestedGameIdRuns = new LinkedTransferQueue<String>();
+	
+	public LinkedTransferQueue<HashMap<String,ClientWebResults>> webPluginUriResults = new LinkedTransferQueue<HashMap<String,ClientWebResults>>();
 
 	private void processWebRequests(GenerateMessage myGenerator) throws InterruptedException, JsonProcessingException {
 		logger.debug("processing web requests");
@@ -41,6 +50,19 @@ public class GoGRPCEmulator {
 			myOutMessages.add(myCommand);
 		}
 	}
+	
+	private void processWebResponse(GenerateMessage myGenerator) throws InterruptedException, JsonProcessingException {
+		logger.debug("processing web responses");
+		while (!webPluginUriResults.isEmpty())
+		{
+			logger.info("web responses to process");
+			HashMap<String, ClientWebResults> entry = webPluginUriResults.take();
+			LinkedTransferQueue<String> myCommands =  myGenerator.generateProcessedNextStep(entry);
+			logger.info(myCommands.toString());
+			myOutMessages.addAll(myCommands);
+		}
+	}
+
 
 	public void runMe(int port) throws IOException, InterruptedException {
 		// py -3.7-32 generic.py token 8488
@@ -58,6 +80,7 @@ public class GoGRPCEmulator {
 
 			logger.debug("start loop");
 			processWebRequests(myGenerator);
+			processWebResponse(myGenerator);
 			// If we don't have any queued messages to deal with generate a new one by
 			// transitioning to the next state
 			if (myOutMessages.isEmpty()) {

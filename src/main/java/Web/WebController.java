@@ -33,6 +33,8 @@ import com.api.igdb.utils.TwitchToken;
 
 import GalaxyStateMachine.ProcessGalaxyResponse;
 import Global.Globals;
+import LocalClient.ClientWebResults;
+import LocalClient.RequestURI;
 import proto.Artwork;
 import proto.Cover;
 import proto.Game;
@@ -76,6 +78,7 @@ public class WebController {
 				+ "                <link rel='stylesheet' type='text/css' href='https://cdn.datatables.net/select/1.3.3/css/select.dataTables.css'>\n"
 				+ "                <link rel='stylesheet' type='text/css' href='/games/style.css'>\n" + "\n"
 				+ "                <button onclick='myOpenGalaxyFunction()' id ='openGalaxyButton'>Open selected in galaxy</button>\n"
+				+ "                <button onclick='getNotificationPluginURI(8488)' id ='openGetNotificationButton'>Open notification in new browser</button>\n"
 				+ "                \n" + "                <table id='mytable' class='display'>\n"
 				+ "                   <thead>\n<tr>\n";
 		// TODO write header for each field
@@ -355,22 +358,35 @@ public class WebController {
 	@ResponseBody
 	String notificationURINext(String port) throws NumberFormatException, InterruptedException {
 		logger.info("request notification next");
-		LinkedTransferQueue<HashMap<String, String>> myQueue = Globals.plugins
+		LinkedTransferQueue<HashMap<String, RequestURI>> myQueue = Globals.plugins
 				.get(Integer.parseInt(port)).pluginURINotifications;
+		
+		LinkedTransferQueue<HashMap<String,ClientWebResults>> outBoundQueue = Globals.plugins
+				.get(Integer.parseInt(port)).emulator.webPluginUriResults; 
+		
+		
 		logger.info(String.valueOf(myQueue.size()));
-		String myResult = "";
+		RequestURI myResult = new RequestURI("","");
 		if (myQueue.size() > 0) {
-			HashMap<String, String> myCurrentEntry = myQueue.take();
+			HashMap<String, RequestURI> myCurrentEntry = myQueue.take();
 			logger.info(myCurrentEntry.toString());
 			
 			for (String myCurrentKey : myCurrentEntry.keySet()) {
 				myResult = myCurrentEntry.get(myCurrentKey);
+				ClientWebResults myClientWebResults = LocalClient.LocalClient.run(myResult);
+				HashMap<String, ClientWebResults> myReturnResult = new HashMap<String, ClientWebResults>();
+				//TODO fill client results with data from browser 
+				//myClientWebResults.setURI(port);
+				myReturnResult.put(myCurrentKey, myClientWebResults );
+				outBoundQueue.put(myReturnResult);
+				logger.info("Added data to result processing queue");
 			}
 		}
 
 		// TODO remove any unnecessary content
-		logger.info(myResult);
-		return myResult;
+		logger.info(myResult.get_start_uri());
+		logger.info(myResult.get_end_regex());
+		return myResult.get_start_uri();
 	}
 	
 	
