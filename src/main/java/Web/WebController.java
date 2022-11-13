@@ -33,6 +33,7 @@ import com.api.igdb.utils.TwitchToken;
 
 import GalaxyStateMachine.ProcessGalaxyResponse;
 import Global.Globals;
+import LocalClient.ClientWebResults;
 import LocalClient.RequestURI;
 import proto.Artwork;
 import proto.Cover;
@@ -359,6 +360,11 @@ public class WebController {
 		logger.info("request notification next");
 		LinkedTransferQueue<HashMap<String, RequestURI>> myQueue = Globals.plugins
 				.get(Integer.parseInt(port)).pluginURINotifications;
+		
+		LinkedTransferQueue<HashMap<String,ClientWebResults>> outBoundQueue = Globals.plugins
+				.get(Integer.parseInt(port)).emulator.webPluginUriResults; 
+		
+		
 		logger.info(String.valueOf(myQueue.size()));
 		RequestURI myResult = new RequestURI("","");
 		if (myQueue.size() > 0) {
@@ -367,7 +373,13 @@ public class WebController {
 			
 			for (String myCurrentKey : myCurrentEntry.keySet()) {
 				myResult = myCurrentEntry.get(myCurrentKey);
-				LocalClient.LocalClient.run(myResult);
+				ClientWebResults myClientWebResults = LocalClient.LocalClient.run(myResult);
+				HashMap<String, ClientWebResults> myReturnResult = new HashMap<String, ClientWebResults>();
+				//TODO fill client results with data from browser 
+				//myClientWebResults.setURI(port);
+				myReturnResult.put(myCurrentKey, myClientWebResults );
+				outBoundQueue.put(myReturnResult);
+				logger.info("Added data to result processing queue");
 			}
 		}
 
