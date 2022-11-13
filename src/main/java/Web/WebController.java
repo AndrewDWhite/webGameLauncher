@@ -33,6 +33,7 @@ import com.api.igdb.utils.TwitchToken;
 
 import GalaxyStateMachine.ProcessGalaxyResponse;
 import Global.Globals;
+import LocalClient.RequestURI;
 import proto.Artwork;
 import proto.Cover;
 import proto.Game;
@@ -355,22 +356,24 @@ public class WebController {
 	@ResponseBody
 	String notificationURINext(String port) throws NumberFormatException, InterruptedException {
 		logger.info("request notification next");
-		LinkedTransferQueue<HashMap<String, String>> myQueue = Globals.plugins
+		LinkedTransferQueue<HashMap<String, RequestURI>> myQueue = Globals.plugins
 				.get(Integer.parseInt(port)).pluginURINotifications;
 		logger.info(String.valueOf(myQueue.size()));
-		String myResult = "";
+		RequestURI myResult = new RequestURI("","");
 		if (myQueue.size() > 0) {
-			HashMap<String, String> myCurrentEntry = myQueue.take();
+			HashMap<String, RequestURI> myCurrentEntry = myQueue.take();
 			logger.info(myCurrentEntry.toString());
 			
 			for (String myCurrentKey : myCurrentEntry.keySet()) {
 				myResult = myCurrentEntry.get(myCurrentKey);
+				LocalClient.LocalClient.run(myResult);
 			}
 		}
 
 		// TODO remove any unnecessary content
-		logger.info(myResult);
-		return myResult;
+		logger.info(myResult.get_start_uri());
+		logger.info(myResult.get_end_regex());
+		return myResult.get_start_uri();
 	}
 	
 	

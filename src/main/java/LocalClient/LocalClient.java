@@ -22,6 +22,10 @@ public class LocalClient {
 		run(baseUrl, ".*about.*");
 	}
 	
+	public static void run (RequestURI myRequest) {
+		run(myRequest.get_start_uri(),myRequest.get_end_regex());
+	}
+	
 	//TODO determine if that can be a static
 	public static void run (String start_uri, String end_uri_regex) {
 
